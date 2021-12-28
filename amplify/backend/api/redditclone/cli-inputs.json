@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "redditclone",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/juanireyes/Documents/Academico/Programming/reddit-clone/amplify/backend/api/redditclone/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2022-12-28T01:53:42.801Z",
+      "keyDescription": "Cool API Key"
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AMAZON_COGNITO_USER_POOLS",
+        "cognitoUserPoolId": "authredditcloned5ade301"
+      }
+    ]
+  }
+}
