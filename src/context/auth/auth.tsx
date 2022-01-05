@@ -27,7 +27,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       const amplifyUser = await Auth.currentAuthenticatedUser();
       setUser(amplifyUser);
     } catch (error) {
-      console.error(error.message);
+      console.error(error.message || "Oh no! My table... its broken... (in auth context tho)");
       setUser(null);
     }
   };
