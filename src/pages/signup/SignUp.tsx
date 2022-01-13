@@ -1,13 +1,17 @@
-import styled from "@emotion/styled";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Button, TextField, Alert, Snackbar } from "@mui/material";
 import { useState } from "react";
+import { useAuth } from "../../context/auth";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Auth } from "aws-amplify";
+import { CognitoUser } from "@aws-amplify/auth";
+
+import styled from "@emotion/styled";
+import { Button, TextField, Alert, Snackbar } from "@mui/material";
 
 interface IFormInput {
   email: string;
   username: string;
   password: string;
-  iceCreamType: { label: string; value: string };
+  code: string;
 }
 
 const FormContainer = styled.form`
@@ -34,17 +38,56 @@ const SignUp: React.FC = () => {
     register,
     handleSubmit,
   } = useForm<IFormInput>();
+  const { user } = useAuth();
+  const [showCode, setShowCode] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     try {
-      const {} = data;
-      throw Error("Breaking app for alrt");
-    } catch (error) {
-      console.log(error);
-      setSubmitError(error.message);
+      if (showCode) {
+        await confirmSignUp(data);
+      } else {
+        await signUpWithEmailAndPassword(data);
+        setShowCode(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setSubmitError(err.message);
     }
   };
+
+  const signUpWithEmailAndPassword: SubmitHandler<IFormInput> = async (
+    data
+  ): Promise<CognitoUser | Error> => {
+    try {
+      const { username, email, password } = data;
+      const { user } = await Auth.signUp({
+        username,
+        password,
+        attributes: {
+          email,
+        },
+      });
+
+      console.log("Signed up user", user);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const confirmSignUp: SubmitHandler<IFormInput> = async (data) => {
+    try {
+      const { username, code, password } = data;
+      await Auth.confirmSignUp(username, code);
+      const amplifyUser = await Auth.signIn(username, password);
+      console.log("Success, signed in user:", amplifyUser);
+    } catch (error) {
+      console.log("error confirming sign up", error);
+    }
+  };
+
+  console.log("Context user value", user);
 
   return (
     <FormContainer onSubmit={handleSubmit(onSubmit)}>
@@ -56,10 +99,24 @@ const SignUp: React.FC = () => {
               value: 3,
               message: "Please enter a username between 3-16 characters.",
             },
+            maxLength: {
+              value: 16,
+              message: "Please enter a username between 3-16 characters.",
+            },
           })}
           label="Username"
           error={!!errors.username}
           helperText={errors.username?.message}
+        />
+
+        <TextField
+          {...register("email", {
+            required: { value: true, message: "Please enter an email" },
+          })}
+          type="email"
+          label="Email"
+          error={!!errors.email}
+          helperText={errors.email?.message}
         />
 
         <TextField
@@ -76,18 +133,27 @@ const SignUp: React.FC = () => {
           helperText={errors.password?.message}
         />
 
-        <TextField
-          {...register("email", {
-            required: { value: true, message: "Please enter an email" },
-          })}
-          type="email"
-          label="Email"
-          error={!!errors.email}
-          helperText={errors.email?.message}
-        />
+        {showCode && (
+          <TextField
+            {...register("code", {
+              required: { value: true, message: "Please enter a code" },
+              minLength: {
+                value: 6,
+                message: "Your verification code must be 6 characters long.",
+              },
+              maxLength: {
+                value: 6,
+                message: "Your verification code must be 6 characters long.",
+              },
+            })}
+            label="Verification Code"
+            error={!!errors.code}
+            helperText={errors.code?.message}
+          />
+        )}
 
         <Button type="submit" variant="contained" style={{ marginTop: 10 }}>
-          Sign Up
+          {showCode ? "Confirm Code" : "Sign Up"}
         </Button>
       </Content>
 
