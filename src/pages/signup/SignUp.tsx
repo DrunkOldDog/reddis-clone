@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/auth";
+import { useRouter } from "next/router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Auth } from "aws-amplify";
 import { CognitoUser } from "@aws-amplify/auth";
@@ -39,6 +40,7 @@ const SignUp: React.FC = () => {
     handleSubmit,
   } = useForm<IFormInput>();
   const { user } = useAuth();
+  const router = useRouter();
   const [showCode, setShowCode] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
@@ -82,6 +84,8 @@ const SignUp: React.FC = () => {
       await Auth.confirmSignUp(username, code);
       const amplifyUser = await Auth.signIn(username, password);
       console.log("Success, signed in user:", amplifyUser);
+      if (amplifyUser) router.push("/");
+      else throw Error("Something went wrong, please try again later.");
     } catch (error) {
       console.log("error confirming sign up", error);
     }
