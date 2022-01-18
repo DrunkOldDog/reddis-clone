@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/auth";
-import { Button, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import Link from "next/link";
 
 import { API } from "aws-amplify";
 import { listPosts } from "../graphql/queries";
 import type { ListPostsQuery, Post } from "../API";
+import PostPreview from "../components/PostPreview";
 
 type ListPostsData = {
   data: ListPostsQuery;
@@ -23,7 +24,7 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <Container>
       {user ? (
         <Typography variant="h4">Hello {user.getUsername()}!</Typography>
       ) : (
@@ -33,9 +34,9 @@ export default function Home() {
       )}
 
       <Typography variant="h5">Posts List:</Typography>
-      {posts.map(({ title, createdAt }) => (
-        <li key={`${title}-${createdAt}`}>{title}</li>
+      {posts.map((post) => (
+        <PostPreview key={`${post.title}-${post.createdAt}`} post={post} />
       ))}
-    </>
+    </Container>
   );
 }
