@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Grid, IconButton } from "@mui/material";
+import { Grid, IconButton, Paper, Typography } from "@mui/material";
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
@@ -11,39 +11,45 @@ interface PostPreviewProps {
 }
 
 const StyledPostPreview = styled(Grid)`
-  border: 1px solid #fff;
+  padding: 12px;
+  margin-top: 24px;
 `;
 
-const VoteButton = styled(IconButton)`
-  svg {
-    max-width: 16px;
-  }
-`;
+const VoteButton = styled(IconButton)``;
 VoteButton.defaultProps = {
   color: "inherit",
 };
 
 const PostPreview: React.FC<PostPreviewProps> = ({ post }: PostPreviewProps) => {
   return (
-    <StyledPostPreview direction="row" spacing={3} container>
-      <Grid item spacing={1} direction="column">
-        <Grid container direction={"column"} alignItems={"center"}>
-          <Grid item>
-            <VoteButton>
-              <ArrowUpwardIcon />
-            </VoteButton>
-          </Grid>
-          <Grid item>votes</Grid>
-          <Grid item>
-            <VoteButton>
-              <ArrowDownwardIcon />
-            </VoteButton>
+    <Paper elevation={3}>
+      <StyledPostPreview direction="row" spacing={3} container>
+        <Grid item spacing={1} direction="column">
+          <Grid container direction={"column"} alignItems={"center"}>
+            <Grid item>
+              <VoteButton>
+                <ArrowUpwardIcon />
+              </VoteButton>
+            </Grid>
+            <Grid item>votes</Grid>
+            <Grid item>
+              <VoteButton>
+                <ArrowDownwardIcon />
+              </VoteButton>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
 
-      <Grid item>rest of the content</Grid>
-    </StyledPostPreview>
+        <Grid item>
+          <Grid container direction="column">
+            <Typography variant="body1">
+              Posted by <b>{post.owner}</b> at <b>{post.createdAt}</b>
+            </Typography>
+            <Typography variant={"h2"}>{post.title}</Typography>
+          </Grid>
+        </Grid>
+      </StyledPostPreview>
+    </Paper>
   );
 };
 

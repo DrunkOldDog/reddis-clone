@@ -33,7 +33,6 @@ export default function Home() {
         </Link>
       )}
 
-      <Typography variant="h5">Posts List:</Typography>
       {posts.map((post) => (
         <PostPreview key={`${post.title}-${post.createdAt}`} post={post} />
       ))}
