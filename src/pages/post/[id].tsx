@@ -3,6 +3,7 @@ import { listPosts, getPost } from "../../graphql/queries";
 import type { GetPostQuery, ListPostsQuery, Post } from "../../API";
 import type { GetStaticProps, GetStaticPaths } from "next";
 import PostPreview from "../../components/PostPreview";
+import PostComment from "../../components/PostComment";
 import { Container } from "@mui/material";
 
 interface IndividualPostProps {
@@ -14,6 +15,10 @@ const IndividualPost: React.FC<IndividualPostProps> = ({ post }) => {
   return (
     <Container maxWidth="md">
       <PostPreview post={post} />
+
+      {post.comments.items.map((comment) => (
+        <PostComment key={comment.id} comment={comment} />
+      ))}
     </Container>
   );
 };
