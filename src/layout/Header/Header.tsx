@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
+import AddIcon from "@mui/icons-material/Add";
 import AppleIcon from "@mui/icons-material/Apple";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Button, Menu, MenuItem } from "@mui/material";
@@ -41,6 +42,10 @@ const Header: React.FC = () => {
           </Typography>
           {user ? (
             <div>
+              <Button color="inherit" endIcon={<AddIcon />} onClick={() => push("/create")}>
+                Create Post
+              </Button>
+
               <IconButton
                 size="large"
                 aria-label="account of current user"
