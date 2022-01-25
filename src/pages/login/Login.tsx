@@ -39,11 +39,15 @@ const Login: React.FC = () => {
   const [submitError, setSubmitError] = useState("");
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const { username, password } = data;
-    const amplifyUser = await Auth.signIn(username, password);
-    console.log("Success, signed in user:", amplifyUser);
-    if (amplifyUser) router.push("/");
-    else throw Error("Something went wrong, please try again later.");
+    try {
+      const { username, password } = data;
+      const amplifyUser = await Auth.signIn(username, password);
+      console.log("Success, signed in user:", amplifyUser);
+      if (amplifyUser) router.push("/");
+      else throw Error("Something went wrong, please try again later.");
+    } catch (error) {
+      setSubmitError(error.message);
+    }
   };
 
   return (
@@ -52,14 +56,6 @@ const Login: React.FC = () => {
         <TextField
           {...register("username", {
             required: { value: true, message: "Please enter a username" },
-            minLength: {
-              value: 3,
-              message: "Please enter a username between 3-16 characters.",
-            },
-            maxLength: {
-              value: 16,
-              message: "Please enter a username between 3-16 characters.",
-            },
           })}
           label="Username"
           error={!!errors.username}
@@ -69,10 +65,6 @@ const Login: React.FC = () => {
         <TextField
           {...register("password", {
             required: { value: true, message: "Please enter a password" },
-            minLength: {
-              value: 8,
-              message: "Please enter a stronger password...",
-            },
           })}
           type="password"
           label="Password"
