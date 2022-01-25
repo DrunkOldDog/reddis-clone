@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Header from "../layout/Header";
 import CssBaseline from "@mui/material/CssBaseline";
 import Amplify from "aws-amplify";
 import { AuthProvider } from "../context/auth";
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
+          <Header />
           <Component {...pageProps} />
         </ThemeProvider>
       </AuthProvider>

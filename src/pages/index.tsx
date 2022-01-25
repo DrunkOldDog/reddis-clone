@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/auth";
-import { Button, Container, Typography } from "@mui/material";
-import Link from "next/link";
+import { Container } from "@mui/material";
 
 import { API } from "aws-amplify";
 import { listPosts } from "../graphql/queries";
@@ -13,7 +11,6 @@ type ListPostsData = {
 };
 
 export default function Home() {
-  const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
@@ -25,14 +22,6 @@ export default function Home() {
 
   return (
     <Container>
-      {user ? (
-        <Typography variant="h4">Hello {user.getUsername()}!</Typography>
-      ) : (
-        <Link href={"/signup"}>
-          <Button>Sign Up here! </Button>
-        </Link>
-      )}
-
       {posts.map((post) => (
         <PostPreview key={`${post.title}-${post.createdAt}`} post={post} />
       ))}
