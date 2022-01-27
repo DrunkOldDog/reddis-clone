@@ -1,6 +1,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "@emotion/styled";
-import { Button, Container, Grid, TextField } from "@mui/material";
+import { Button, Container, Grid, Paper, TextField } from "@mui/material";
+import ImageDropzone from "../../components/ImageDropzone";
+import { useState } from "react";
 
 interface IFormInput {
   title: string;
@@ -21,6 +23,7 @@ const CreatePost: React.FC = () => {
     register,
     handleSubmit,
   } = useForm<IFormInput>();
+  const [file, setFile] = useState("");
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
@@ -28,48 +31,54 @@ const CreatePost: React.FC = () => {
 
   return (
     <Container maxWidth="md">
-      <FormContainer onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2} direction={"column"}>
-          <Grid item>
-            <TextField
-              {...register("title", {
-                required: { value: true, message: "Please enter a title." },
-                maxLength: {
-                  value: 120,
-                  message: "Please enter a title that is 120 characters or less",
-                },
-              })}
-              fullWidth
-              label="Post Title"
-              error={!!errors.title}
-              helperText={errors.title?.message}
-            />
-          </Grid>
+      <Paper style={{ marginTop: 75 }} elevation={3}>
+        <FormContainer onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={2} direction={"column"}>
+            <Grid item>
+              <TextField
+                {...register("title", {
+                  required: { value: true, message: "Please enter a title." },
+                  maxLength: {
+                    value: 120,
+                    message: "Please enter a title that is 120 characters or less",
+                  },
+                })}
+                fullWidth
+                label="Post Title"
+                error={!!errors.title}
+                helperText={errors.title?.message}
+              />
+            </Grid>
 
-          <Grid item>
-            <TextField
-              {...register("content", {
-                required: { value: true, message: "Please enter a some content for your post." },
-                maxLength: {
-                  value: 1000,
-                  message: "Please make sure your content is 1000 characters or less.",
-                },
-              })}
-              fullWidth
-              multiline
-              label="Post Content"
-              error={!!errors.content}
-              helperText={errors.content?.message}
-            />
-          </Grid>
+            <Grid item>
+              <TextField
+                {...register("content", {
+                  required: { value: true, message: "Please enter a some content for your post." },
+                  maxLength: {
+                    value: 1000,
+                    message: "Please make sure your content is 1000 characters or less.",
+                  },
+                })}
+                fullWidth
+                multiline
+                label="Post Content"
+                error={!!errors.content}
+                helperText={errors.content?.message}
+              />
+            </Grid>
 
-          <Grid item>
-            <Button variant="contained" type="submit" style={{ width: "100%" }}>
-              Create Post
-            </Button>
+            <Grid item>
+              <ImageDropzone file={file} setFile={setFile} />
+            </Grid>
+
+            <Grid item>
+              <Button variant="contained" type="submit" style={{ width: "100%" }}>
+                Create Post
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </FormContainer>
+        </FormContainer>
+      </Paper>
     </Container>
   );
 };
