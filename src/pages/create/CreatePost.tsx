@@ -36,37 +36,35 @@ const CreatePost: React.FC = () => {
   const [file, setFile] = useState<File | undefined>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    console.log(data);
-    console.log(file);
-
-    if (file) {
-      try {
-        const imagePath = data.title.replaceAll(" ", "-");
+    try {
+      let imagePath: string | undefined;
+      if (file) {
+        imagePath = data.title.replaceAll(" ", "-");
         await Storage.put(imagePath, file, {
           contentType: file.type,
         });
-
-        const createPostInput: CreatePostInput = {
-          title: data.title,
-          image: imagePath,
-          contents: data.content,
-          upvotes: 0,
-          downvotes: 0,
-        };
-
-        const createNewPost = (await API.graphql({
-          query: createPost,
-          variables: {
-            input: createPostInput,
-          },
-          authMode: "AMAZON_COGNITO_USER_POOLS",
-        })) as CreateNewPost;
-
-        console.log("new post created successfully", createNewPost);
-        push(`/post/${createNewPost.data.createPost.id}`);
-      } catch (error) {
-        console.log("Error uploading file: ", error);
       }
+
+      const createPostInput: CreatePostInput = {
+        title: data.title,
+        image: imagePath,
+        contents: data.content,
+        upvotes: 0,
+        downvotes: 0,
+      };
+
+      const createNewPost = (await API.graphql({
+        query: createPost,
+        variables: {
+          input: createPostInput,
+        },
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      })) as CreateNewPost;
+
+      console.log("new post created successfully", createNewPost);
+      push(`/post/${createNewPost.data.createPost.id}`);
+    } catch (error) {
+      console.log("Error uploading file: ", error);
     }
   };
 
