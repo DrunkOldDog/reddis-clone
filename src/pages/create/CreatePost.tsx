@@ -1,14 +1,23 @@
-import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "@emotion/styled";
-import { Button, Container, Grid, Paper, TextField } from "@mui/material";
-import ImageDropzone from "../../components/ImageDropzone";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Storage, API } from "aws-amplify";
+
+import ImageDropzone from "../../components/ImageDropzone";
+import { Button, Container, Grid, Paper, TextField } from "@mui/material";
+import { createPost } from "../../graphql/mutations";
+import type { CreatePostInput, CreatePostMutation } from "../../API";
 
 interface IFormInput {
   title: string;
   content: string;
   image?: string;
 }
+
+type CreateNewPost = {
+  data: CreatePostMutation;
+};
 
 const FormContainer = styled.form`
   width: 100%;
@@ -23,10 +32,42 @@ const CreatePost: React.FC = () => {
     register,
     handleSubmit,
   } = useForm<IFormInput>();
-  const [file, setFile] = useState("");
+  const { push } = useRouter();
+  const [file, setFile] = useState<File | undefined>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
+    console.log(file);
+
+    if (file) {
+      try {
+        const imagePath = data.title.replaceAll(" ", "-");
+        await Storage.put(imagePath, file, {
+          contentType: file.type,
+        });
+
+        const createPostInput: CreatePostInput = {
+          title: data.title,
+          image: imagePath,
+          contents: data.content,
+          upvotes: 0,
+          downvotes: 0,
+        };
+
+        const createNewPost = (await API.graphql({
+          query: createPost,
+          variables: {
+            input: createPostInput,
+          },
+          authMode: "AMAZON_COGNITO_USER_POOLS",
+        })) as CreateNewPost;
+
+        console.log("new post created successfully", createNewPost);
+        push(`/post/${createNewPost.data.createPost.id}`);
+      } catch (error) {
+        console.log("Error uploading file: ", error);
+      }
+    }
   };
 
   return (

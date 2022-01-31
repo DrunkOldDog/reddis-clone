@@ -16,5 +16,11 @@ export type AmplifyDependentResourcesAttributes = {
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
         }
+    },
+    "storage": {
+        "reditcloneimages": {
+            "BucketName": "string",
+            "Region": "string"
+        }
     }
 }

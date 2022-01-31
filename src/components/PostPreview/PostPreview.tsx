@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import Image from "next/image";
@@ -8,6 +9,7 @@ import {
 } from "@mui/icons-material";
 import { timeSince } from "../../common/helpers";
 import type { Post } from "../../API";
+import { Storage } from "aws-amplify";
 
 interface PostPreviewProps {
   post: Post;
@@ -31,6 +33,20 @@ const VotesBox = styled(Box)`
 
 const PostPreview: React.FC<PostPreviewProps> = ({ post }: PostPreviewProps) => {
   const router = useRouter();
+  const [postImage, setPostImage] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      if (post.image) {
+        try {
+          const signedURL = await Storage.get(post.image);
+          setPostImage(signedURL);
+        } catch (error) {
+          console.error("getting image error:", error.message);
+        }
+      }
+    })();
+  }, [post]);
 
   return (
     <Paper elevation={3}>
@@ -75,9 +91,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ post }: PostPreviewProps) => 
               </Typography>
 
               <Grid item>
-                {post.image && (
-                  <Image src={post.image} height={270} width={420} layout="intrinsic" />
-                )}
+                {postImage && <Image src={postImage} height={270} width={420} layout="intrinsic" />}
               </Grid>
             </Grid>
           </ButtonBase>
