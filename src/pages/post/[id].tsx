@@ -1,24 +1,37 @@
+import { useState } from "react";
 import { withSSRContext } from "aws-amplify";
-import { listPosts, getPost } from "../../graphql/queries";
-import type { GetPostQuery, ListPostsQuery, Post } from "../../API";
-import type { GetStaticProps, GetStaticPaths } from "next";
+import { Container } from "@mui/material";
 import PostPreview from "../../components/PostPreview";
 import PostComment from "../../components/PostComment";
-import { Container } from "@mui/material";
+import CommentField from "../../components/CommentField";
+
+import { listPosts, getPost } from "../../graphql/queries";
+import type { Comment, GetPostQuery, ListPostsQuery, Post } from "../../API";
+import type { GetStaticProps, GetStaticPaths } from "next";
 
 interface IndividualPostProps {
   post: Post;
 }
 
 const IndividualPost: React.FC<IndividualPostProps> = ({ post }) => {
-  console.log("got post", post);
+  const [comments, setComments] = useState<Comment[]>(post.comments.items);
+
+  const onCommentCreate = (comment: Comment) => {
+    setComments([...comments, comment]);
+  };
+
   return (
     <Container maxWidth="md">
       <PostPreview post={post} />
 
-      {post.comments.items.map((comment) => (
-        <PostComment key={comment.id} comment={comment} />
-      ))}
+      {/* Add a comment */}
+      <CommentField post={post} onCommentCreate={onCommentCreate} />
+
+      {comments
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((comment) => (
+          <PostComment key={comment.id} comment={comment} />
+        ))}
     </Container>
   );
 };
